@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button, StepBadge } from "@/components/ui";
 
 /* ── Petal config: position, size, animation timing ── */
@@ -113,9 +114,11 @@ export default function Home() {
           className="animate-fade-in-up mt-10"
           style={{ animationDelay: "0.5s" }}
         >
-          <Button variant="primary" size="lg">
-            Build a Bouquet
-          </Button>
+          <Link href="/build">
+            <Button variant="primary" size="lg">
+              Build a Bouquet
+            </Button>
+          </Link>
         </div>
 
         {/* ── Scroll hint ── */}

@@ -2,8 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import { Stage, Layer, Image as KonvaImage, Rect } from "react-konva";
 import useImage from "use-image";
 import { useBouquet, FlowerItem } from "@/store/bouquetContext";
-import { FLOWERS } from "@/lib/mockData";
+import { FLOWERS, WRAPPERS, RIBBONS } from "@/lib/mockData";
 import FlowerNode from "./FlowerNode";
+import { BouquetBackground, BouquetForeground } from "@/components/bouquet/BouquetVisuals";
 
 export default function KonvaStage() {
   const { state, dispatch } = useBouquet();
@@ -16,8 +17,8 @@ export default function KonvaStage() {
   useEffect(() => {
     if (containerRef.current) {
       setDimensions({
-        width: containerRef.current.offsetWidth,
-        height: Math.min(600, window.innerHeight * 0.6),
+        width: 400, // Fixed logical width for consistent SVG rendering
+        height: 500,
       });
     }
   }, []);
@@ -31,27 +32,39 @@ export default function KonvaStage() {
 
   const handleFlowerChange = (id: string, newAttrs: any) => {
     const flowers = state.selectedFlowers.map((f) => (f.id === id ? newAttrs : f));
-    // Kita perlu update context
-    // Karena action ADD/REMOVE spesifik, kita bisa tambah action UPDATE_FLOWERS
     dispatch({ type: "LOAD_STATE", payload: { ...state, selectedFlowers: flowers } });
   };
 
+  const wrapperData = WRAPPERS.find((w) => w.id === state.wrapperId);
+  const wrapperColor = wrapperData ? wrapperData.color : "transparent";
+
+  const ribbonData = RIBBONS.find((r) => r.id === state.ribbonId);
+  const ribbonColor = ribbonData ? ribbonData.color : "transparent";
+
   return (
-    <div ref={containerRef} className="w-full relative">
+    <div ref={containerRef} className="relative w-[400px] h-[500px] mx-auto overflow-hidden rounded-xl border border-gray-100 bg-white">
+      {/* Background Wrapper */}
+      {state.wrapperId && (
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <BouquetBackground color={wrapperColor} />
+        </div>
+      )}
+
       <Stage
-        width={dimensions.width}
-        height={dimensions.height}
+        width={400}
+        height={500}
         onMouseDown={checkDeselect}
         onTouchStart={checkDeselect}
+        className="relative z-10"
       >
         <Layer>
-          {/* Background Kertas Pembungkus (Placeholder) */}
+          {/* Transparent Rect for capturing background clicks */}
           <Rect
             x={0}
             y={0}
-            width={dimensions.width}
-            height={dimensions.height}
-            fill={state.wrapperId ? "#FDF6F0" : "#ffffff"}
+            width={400}
+            height={500}
+            fill="transparent"
             name="background"
           />
 
@@ -74,9 +87,16 @@ export default function KonvaStage() {
         </Layer>
       </Stage>
 
+      {/* Foreground Wrapper & Ribbon */}
+      {(state.wrapperId || state.ribbonId) && (
+        <div className="absolute inset-0 pointer-events-none z-20">
+          <BouquetForeground wrapperColor={wrapperColor} ribbonColor={ribbonColor} />
+        </div>
+      )}
+
       {/* Layer Control Buttons */}
       {selectedId && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-full shadow-lg border border-gray-200 px-4 py-2 flex items-center gap-4">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 bg-white rounded-full shadow-lg border border-gray-200 px-4 py-2 flex items-center gap-4">
           <button
             onClick={() => {
               const items = [...state.selectedFlowers];

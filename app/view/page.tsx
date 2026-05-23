@@ -4,9 +4,57 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { decodeBouquetState } from "@/lib/encoder";
 import { BouquetState } from "@/store/bouquetContext";
-import { FLOWERS } from "@/lib/mockData";
+import { FLOWERS, WRAPPERS, RIBBONS } from "@/lib/mockData";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui";
+import { BouquetBackground, BouquetForeground } from "@/components/bouquet/BouquetVisuals";
+import { useCropRect } from "@/lib/imageUtils";
+
+function CroppedFlowerImg({ flowerData, item, index, offsetX }: any) {
+  const crop = useCropRect(flowerData.image);
+  const cw = crop ? crop.width : 150;
+  const ch = crop ? crop.height : 150;
+  const defaultScale = 150 / Math.max(cw, ch, 1);
+  const scale = item.scaleX || defaultScale;
+
+  return (
+    <motion.div
+      initial={{ y: 200, opacity: 0, scale: 0 }}
+      animate={{ 
+        y: item.y || 150, 
+        x: (item.x || 150) + offsetX,
+        opacity: 1, 
+        scale: scale,
+        rotate: item.rotation || 0
+      }}
+      transition={{ 
+        duration: 0.8, 
+        delay: 1 + index * 0.2, // Stagger delay
+        type: "spring",
+        bounce: 0.4
+      }}
+      className="absolute origin-top-left"
+      style={{
+        left: 0,
+        top: 0,
+        width: cw,
+        height: ch,
+        overflow: "hidden"
+      }}
+    >
+      <img 
+        src={flowerData.image} 
+        alt={flowerData.name} 
+        style={{ 
+          position: "absolute", 
+          left: crop ? -crop.x : 0, 
+          top: crop ? -crop.y : 0, 
+          maxWidth: "none" 
+        }} 
+      />
+    </motion.div>
+  );
+}
 
 function ViewBouquet() {
   const searchParams = useSearchParams();
@@ -48,18 +96,36 @@ function ViewBouquet() {
     );
   }
 
+  // Wrapper & Ribbon colors
+  const wrapperData = WRAPPERS.find((w) => w.id === bouquet.wrapperId);
+  const wrapperColor = wrapperData ? wrapperData.color : "#FDF6F0";
+
+  const ribbonData = RIBBONS.find((r) => r.id === bouquet.ribbonId);
+  const ribbonColor = ribbonData ? ribbonData.color : "transparent";
+
+  // Center flowers horizontally
+  let minX = Infinity, maxX = -Infinity;
+  bouquet.selectedFlowers?.forEach(item => {
+    if ((item.x || 0) < minX) minX = item.x || 0;
+    if ((item.x || 0) > maxX) maxX = item.x || 0;
+  });
+  const flowersCenterX = minX !== Infinity ? (minX + maxX) / 2 + 75 : 200; // 75 is half default width
+  const offsetX = 200 - flowersCenterX; // 200 is center of 400px container
+
   return (
     <div className="min-h-screen bg-[var(--color-canvas-bg)] overflow-hidden relative flex flex-col items-center py-12 px-4">
       {/* Container Buket */}
-      <div className="relative w-[400px] h-[500px] max-w-full">
-        {/* Wrapping Paper Unfold Animation */}
+      <div className="relative w-[400px] h-[500px] max-w-full flex justify-center">
+        {/* Background Wrapper */}
         <motion.div
           initial={{ scaleY: 0, opacity: 0 }}
           animate={{ scaleY: 1, opacity: 1 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
           style={{ originY: 1 }}
-          className="absolute inset-0 bg-[#FDF6F0] rounded-b-full rounded-t-3xl border border-gray-200 shadow-md z-0"
-        ></motion.div>
+          className="absolute inset-0 pointer-events-none z-0"
+        >
+          {bouquet.wrapperId && <BouquetBackground color={wrapperColor} />}
+        </motion.div>
 
         {/* Render Bunga dengan Stagger Animation */}
         <div className="absolute inset-0 z-10 pointer-events-none">
@@ -68,35 +134,29 @@ function ViewBouquet() {
             if (!flowerData) return null;
 
             return (
-              <motion.img
+              <CroppedFlowerImg
                 key={item.id}
-                src={flowerData.image}
-                alt={flowerData.name}
-                initial={{ y: 200, opacity: 0, scale: 0 }}
-                animate={{ 
-                  y: item.y, 
-                  x: item.x,
-                  opacity: 1, 
-                  scale: item.scaleX || 1,
-                  rotate: item.rotation || 0
-                }}
-                transition={{ 
-                  duration: 0.8, 
-                  delay: 1 + index * 0.2, // Stagger delay
-                  type: "spring",
-                  bounce: 0.4
-                }}
-                className="absolute origin-center"
-                style={{
-                  left: 0,
-                  top: 0,
-                  width: 150, // default scale matching kanvas
-                  height: "auto",
-                }}
+                flowerData={flowerData}
+                item={item}
+                index={index}
+                offsetX={offsetX}
               />
             );
           })}
         </div>
+
+        {/* Foreground Wrapper & Ribbon Render */}
+        <motion.div
+          initial={{ scaleY: 0, opacity: 0 }}
+          animate={{ scaleY: 1, opacity: 1 }}
+          transition={{ duration: 1.5, delay: 1, ease: "easeOut" }}
+          style={{ originY: 1 }}
+          className="absolute inset-0 pointer-events-none z-20"
+        >
+          {(bouquet.wrapperId || bouquet.ribbonId) && (
+            <BouquetForeground wrapperColor={wrapperColor} ribbonColor={ribbonColor} />
+          )}
+        </motion.div>
       </div>
 
       {/* Kartu Ucapan Slide In */}

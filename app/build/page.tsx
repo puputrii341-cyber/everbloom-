@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useBouquet } from "@/store/bouquetContext";
 import StepperNav from "@/components/bouquet/StepperNav";
 import StepSelection from "@/components/build/StepSelection";
@@ -26,13 +27,20 @@ export default function BuildPage() {
       {/* Footer Nav Controls */}
       <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 z-40">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <button
-            onClick={() => dispatch({ type: "SET_STEP", payload: Math.max(1, state.step - 1) })}
-            disabled={state.step === 1}
-            className="px-6 py-2 rounded-full font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-[var(--color-text-muted)] hover:bg-gray-100"
-          >
-            Kembali
-          </button>
+          {state.step === 1 ? (
+            <Link href="/">
+              <button className="px-6 py-2 rounded-full font-medium text-sm transition-colors text-[var(--color-text-muted)] hover:bg-gray-100">
+                Kembali
+              </button>
+            </Link>
+          ) : (
+            <button
+              onClick={() => dispatch({ type: "SET_STEP", payload: Math.max(1, state.step - 1) })}
+              className="px-6 py-2 rounded-full font-medium text-sm transition-colors text-[var(--color-text-muted)] hover:bg-gray-100"
+            >
+              Kembali
+            </button>
+          )}
           
           <div className="text-sm text-[var(--color-text-muted)] hidden md:block">
             {state.step === 1 && `${state.selectedFlowers.length}/10 Bunga Terpilih`}

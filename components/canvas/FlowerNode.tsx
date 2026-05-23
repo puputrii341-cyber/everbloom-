@@ -2,6 +2,7 @@ import { useRef, useEffect } from "react";
 import { Image as KonvaImage, Transformer, Group } from "react-konva";
 import useImage from "use-image";
 import { FlowerItem } from "@/store/bouquetContext";
+import { useCropRect } from "@/lib/imageUtils";
 
 interface FlowerNodeProps {
   item: FlowerItem;
@@ -12,8 +13,9 @@ interface FlowerNodeProps {
 }
 
 export default function FlowerNode({ item, imageSrc, isSelected, onSelect, onChange }: FlowerNodeProps) {
-  // @ts-ignore - useImage types might be slightly off
   const [image] = useImage(imageSrc, "anonymous");
+  const crop = useCropRect(imageSrc);
+  
   const shapeRef = useRef<any>(null);
   const trRef = useRef<any>(null);
 
@@ -26,14 +28,18 @@ export default function FlowerNode({ item, imageSrc, isSelected, onSelect, onCha
 
   if (!image) return null;
 
-  // Tentukan ukuran default berdasarkan gambar, skala ke maks 150px agar muat di kanvas
-  const defaultScale = 150 / Math.max(image.width, image.height, 1);
+  const cw = crop ? crop.width : image.width;
+  const ch = crop ? crop.height : image.height;
+  const defaultScale = 150 / Math.max(cw, ch, 1);
 
   return (
     <Group>
       <KonvaImage
         ref={shapeRef}
         image={image}
+        crop={crop || undefined}
+        width={cw}
+        height={ch}
         x={item.x || 150}
         y={item.y || 150}
         scaleX={item.scaleX || defaultScale}

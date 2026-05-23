@@ -19,7 +19,7 @@ export default function StepperNav() {
           const isCompleted = currentStep > step.num;
 
           return (
-            <div key={step.num} className="flex items-center w-full relative">
+            <div key={step.num} className={`flex items-center relative ${index < steps.length - 1 ? 'w-full' : ''}`}>
               {/* Step indicator */}
               <div className="flex flex-col items-center gap-2 relative z-10">
                 <div
@@ -45,7 +45,7 @@ export default function StepperNav() {
                 </div>
                 <span
                   className={`
-                    text-xs font-[family-name:var(--font-body)] absolute top-10 whitespace-nowrap
+                    text-xs font-[family-name:var(--font-body)] absolute top-10 whitespace-nowrap left-1/2 -translate-x-1/2
                     ${
                       isActive
                         ? "font-bold text-[var(--color-text-dark)]"
