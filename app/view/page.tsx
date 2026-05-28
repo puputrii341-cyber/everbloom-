@@ -10,7 +10,7 @@ import { Button } from "@/components/ui";
 import { BouquetBackground, BouquetForeground } from "@/components/bouquet/BouquetVisuals";
 import { useCropRect } from "@/lib/imageUtils";
 
-function CroppedFlowerImg({ flowerData, item, index, offsetX }: any) {
+function CroppedFlowerImg({ flowerData, item, index }: any) {
   const crop = useCropRect(flowerData.image);
   const cw = crop ? crop.width : 150;
   const ch = crop ? crop.height : 150;
@@ -22,7 +22,7 @@ function CroppedFlowerImg({ flowerData, item, index, offsetX }: any) {
       initial={{ y: 200, opacity: 0, scale: 0 }}
       animate={{ 
         y: item.y || 150, 
-        x: (item.x || 150) + offsetX,
+        x: item.x || 150,
         opacity: 1, 
         scale: scale,
         rotate: item.rotation || 0
@@ -63,12 +63,25 @@ function ViewBouquet() {
   const [showCard, setShowCard] = useState(false);
 
   useEffect(() => {
+    const idParam = searchParams.get("id");
     const bParam = searchParams.get("b");
-    if (bParam) {
+
+    if (idParam) {
+      fetch(`/api/bouquet?id=${idParam}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.bouquet) {
+            setBouquet(data.bouquet);
+            setTimeout(() => setShowCard(true), 3000);
+          } else {
+            setError(true);
+          }
+        })
+        .catch(() => setError(true));
+    } else if (bParam) {
       const decoded = decodeBouquetState(bParam);
       if (decoded) {
         setBouquet(decoded);
-        // Tampilkan kartu setelah 3 detik
         setTimeout(() => setShowCard(true), 3000);
       } else {
         setError(true);
@@ -103,14 +116,7 @@ function ViewBouquet() {
   const ribbonData = RIBBONS.find((r) => r.id === bouquet.ribbonId);
   const ribbonColor = ribbonData ? ribbonData.color : "transparent";
 
-  // Center flowers horizontally
-  let minX = Infinity, maxX = -Infinity;
-  bouquet.selectedFlowers?.forEach(item => {
-    if ((item.x || 0) < minX) minX = item.x || 0;
-    if ((item.x || 0) > maxX) maxX = item.x || 0;
-  });
-  const flowersCenterX = minX !== Infinity ? (minX + maxX) / 2 + 75 : 200; // 75 is half default width
-  const offsetX = 200 - flowersCenterX; // 200 is center of 400px container
+  // We do not apply offsetX because the user manually positioned the flowers
 
   return (
     <div className="min-h-screen bg-[var(--color-canvas-bg)] overflow-hidden relative flex flex-col items-center py-12 px-4">
@@ -139,7 +145,6 @@ function ViewBouquet() {
                 flowerData={flowerData}
                 item={item}
                 index={index}
-                offsetX={offsetX}
               />
             );
           })}

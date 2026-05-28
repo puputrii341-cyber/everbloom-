@@ -19,9 +19,14 @@ export function getCropRect(imageSrc: string): Promise<CropRect | null> {
     img.crossOrigin = "anonymous";
     img.onload = () => {
       const canvas = document.createElement("canvas");
-      // Scale down drastically for instantaneous scanning (50px width)
-      const scale = 50 / img.width;
-      canvas.width = 50;
+      // Scale down to a max of 300px for scanning to keep it fast but accurate
+      const maxDim = 300;
+      let scale = 1;
+      if (img.width > maxDim || img.height > maxDim) {
+        scale = maxDim / Math.max(img.width, img.height);
+      }
+      
+      canvas.width = Math.max(1, img.width * scale);
       canvas.height = Math.max(1, img.height * scale);
       
       const ctx = canvas.getContext("2d", { willReadFrequently: true });
@@ -31,15 +36,19 @@ export function getCropRect(imageSrc: string): Promise<CropRect | null> {
       const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
       
       let top = null, bottom = null, left = null, right = null;
-      for (let y = 0; y < canvas.height; y++) {
-        for (let x = 0; x < canvas.width; x++) {
-          const alpha = data[(y * canvas.width + x) * 4 + 3];
-          if (alpha > 10) {
-            if (top === null) top = y;
-            bottom = y;
-            if (left === null || x < left) left = x;
-            if (right === null || x > right) right = x;
-          }
+      const w = canvas.width;
+      
+      // Optimize loop by iterating directly over the pixel array
+      for (let i = 3, len = data.length; i < len; i += 4) {
+        if (data[i] > 20) {
+          const pixelIndex = (i - 3) / 4;
+          const y = Math.floor(pixelIndex / w);
+          const x = pixelIndex % w;
+          
+          if (top === null) top = y;
+          bottom = y;
+          if (left === null || x < left) left = x;
+          if (right === null || x > right) right = x;
         }
       }
       
@@ -48,7 +57,7 @@ export function getCropRect(imageSrc: string): Promise<CropRect | null> {
       }
 
       // Map back to original image coordinates
-      const padding = 2; // small padding to avoid cutting edges
+      const padding = 2; // small padding
       const originalLeft = Math.max(0, (left - padding) / scale);
       const originalTop = Math.max(0, (top - padding) / scale);
       const originalRight = Math.min(img.width, (right + padding) / scale);
