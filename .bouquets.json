@@ -386,5 +386,135 @@
     "receiverName": "anomi",
     "message": "alomani pergi membeli nasgor goren dan ayam chiken di mojokerto salam",
     "cardStyle": "ivory-classic"
+  },
+  "lsocqc": {
+    "step": 4,
+    "selectedFlowers": [
+      {
+        "id": "flw-1780059214484-fkzsm",
+        "flowerId": "tulip",
+        "x": 107.53258160686164,
+        "y": 150.98741702607035,
+        "scaleX": 0.05491124709330951,
+        "scaleY": 0.054911247093309516,
+        "rotation": 0
+      },
+      {
+        "id": "flw-1780059214966-dkk6j",
+        "flowerId": "tulip",
+        "x": 195.86287760074387,
+        "y": 153.11007674454456,
+        "scaleX": 0.05196292705140778,
+        "scaleY": 0.05196292705140785,
+        "rotation": 0
+      },
+      {
+        "id": "flw-1780059215415-41kcq",
+        "flowerId": "tulip",
+        "x": 234.6909648782365,
+        "y": 216.35001531618178,
+        "scaleX": 0.04264984295459729,
+        "scaleY": 0.042649842954597283,
+        "rotation": 0
+      },
+      {
+        "id": "flw-1780059216111-25otu",
+        "flowerId": "tulip",
+        "x": 94.32261983752772,
+        "y": 196.80018575772476,
+        "scaleX": 0.04572599271890497,
+        "scaleY": 0.045725992718904984,
+        "rotation": 0
+      },
+      {
+        "id": "flw-1780059217407-51gfu",
+        "flowerId": "tulip",
+        "x": 178.86773641167215,
+        "y": 245.37286803256836,
+        "scaleX": 0.05144265536303167,
+        "scaleY": 0.051442655363031664,
+        "rotation": 0
+      },
+      {
+        "id": "flw-1780059217851-p1ava",
+        "flowerId": "tulip",
+        "x": 112.26937818801946,
+        "y": 242.924706689726,
+        "scaleX": 0.04745689957946343,
+        "scaleY": 0.04745689957946346,
+        "rotation": 0
+      }
+    ],
+    "wrapperId": "blush",
+    "ribbonId": "renda-putih",
+    "senderName": "Aulia",
+    "receiverName": "mom",
+    "message": "Happy ied al- adha",
+    "cardStyle": "blush-petal"
+  },
+  "nemc5g": {
+    "step": 4,
+    "selectedFlowers": [
+      {
+        "id": "flw-1780059214484-fkzsm",
+        "flowerId": "tulip",
+        "x": 107.53258160686164,
+        "y": 150.98741702607035,
+        "scaleX": 0.05491124709330951,
+        "scaleY": 0.054911247093309516,
+        "rotation": 0
+      },
+      {
+        "id": "flw-1780059214966-dkk6j",
+        "flowerId": "tulip",
+        "x": 195.86287760074387,
+        "y": 153.11007674454456,
+        "scaleX": 0.05196292705140778,
+        "scaleY": 0.05196292705140785,
+        "rotation": 0
+      },
+      {
+        "id": "flw-1780059215415-41kcq",
+        "flowerId": "tulip",
+        "x": 234.6909648782365,
+        "y": 216.35001531618178,
+        "scaleX": 0.04264984295459729,
+        "scaleY": 0.042649842954597283,
+        "rotation": 0
+      },
+      {
+        "id": "flw-1780059216111-25otu",
+        "flowerId": "tulip",
+        "x": 94.32261983752772,
+        "y": 196.80018575772476,
+        "scaleX": 0.04572599271890497,
+        "scaleY": 0.045725992718904984,
+        "rotation": 0
+      },
+      {
+        "id": "flw-1780059217407-51gfu",
+        "flowerId": "tulip",
+        "x": 178.86773641167215,
+        "y": 245.37286803256836,
+        "scaleX": 0.05144265536303167,
+        "scaleY": 0.051442655363031664,
+        "rotation": 0
+      },
+      {
+        "id": "flw-1780059217851-p1ava",
+        "flowerId": "tulip",
+        "x": 112.26937818801946,
+        "y": 242.924706689726,
+        "scaleX": 0.04745689957946343,
+        "scaleY": 0.04745689957946346,
+        "rotation": 0
+      }
+    ],
+    "wrapperId": "blush",
+    "ribbonId": "renda-putih",
+    "senderName": "Aulia",
+    "receiverName": "mom",
+    "message": "Happy ied al- adha",
+    "cardStyle": "blush-petal"
   }
 }
