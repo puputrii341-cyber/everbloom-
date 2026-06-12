@@ -11,7 +11,7 @@ export function encodeBouquetState(state: BouquetState): string {
       f.flowerId,
       Math.round(f.x || 150),
       Math.round(f.y || 150),
-      Number((f.scaleX || 1).toFixed(2)),
+      f.scaleX ? Number(f.scaleX.toFixed(3)) : null,
       Math.round(f.rotation || 0)
     ]);
 
@@ -52,8 +52,8 @@ export function decodeBouquetState(encodedStr: string): Partial<BouquetState> | 
           flowerId: f[0],
           x: f[1],
           y: f[2],
-          scaleX: f[3],
-          scaleY: f[3],
+          scaleX: f[3] === null ? undefined : f[3],
+          scaleY: f[3] === null ? undefined : f[3],
           rotation: f[4]
         })),
         wrapperId: decoded[1],
