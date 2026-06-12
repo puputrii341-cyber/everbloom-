@@ -120,6 +120,17 @@ function ViewBouquet() {
 
   return (
     <div className="min-h-screen bg-[var(--color-canvas-bg)] overflow-hidden relative flex flex-col items-center py-12 px-4">
+      {/* SVG clipPath definition (invisible) — matches the outer wrapper shape */}
+      <svg width="0" height="0" style={{ position: "absolute" }}>
+        <defs>
+          <clipPath id="bouquet-clip" clipPathUnits="objectBoundingBox">
+            {/* Normalized version of "M 20 80 Q 200 -20 380 80 L 260 340 L 140 340 Z" 
+                in a 400×500 viewBox → divide x by 400, y by 500 */}
+            <path d="M 0.05 0.16 Q 0.5 -0.04 0.95 0.16 L 0.65 0.68 L 0.35 0.68 Z" />
+          </clipPath>
+        </defs>
+      </svg>
+
       {/* Container Buket */}
       <div className="relative w-[400px] h-[500px] max-w-full flex justify-center">
         {/* Background Wrapper */}
@@ -133,8 +144,11 @@ function ViewBouquet() {
           {bouquet.wrapperId && <BouquetBackground color={wrapperColor} />}
         </motion.div>
 
-        {/* Render Bunga dengan Stagger Animation */}
-        <div className="absolute inset-0 z-10 pointer-events-none">
+        {/* Render Bunga dengan Stagger Animation — di-clip ke bentuk wrapper */}
+        <div
+          className="absolute inset-0 z-10 pointer-events-none"
+          style={{ clipPath: "url(#bouquet-clip)" }}
+        >
           {bouquet.selectedFlowers?.map((item, index) => {
             const flowerData = FLOWERS.find((f) => f.id === item.flowerId);
             if (!flowerData) return null;
