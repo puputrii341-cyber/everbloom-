@@ -16,13 +16,31 @@ export default function StepDelivery() {
       if (typeof window === "undefined") return;
       const baseUrl = window.location.origin;
       try {
-        // Karena Vercel menggunakan serverless yang mana filesystem-nya read-only/ephemeral,
-        // menyimpan ke .bouquets.json tidak akan permanen.
-        // Oleh karena itu, kita langsung mem-bypass API dan menyematkan data ke dalam parameter URL.
         const encodedState = encodeBouquetState(state);
-        const url = `${baseUrl}/view?b=${encodedState}`;
-        setShareUrl(url);
-        generateQRCodeUrl(url).then(setQrCodeUrl);
+        const longUrl = `${baseUrl}/view?b=${encodedState}`;
+        
+        // Coba pendekkan URL menggunakan API internal yang memanggil URL Shortener
+        try {
+          const res = await fetch("/api/shorten", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: longUrl }),
+          });
+          
+          if (res.ok) {
+            const data = await res.json();
+            setShareUrl(data.shortUrl);
+            generateQRCodeUrl(data.shortUrl).then(setQrCodeUrl);
+          } else {
+            throw new Error("Shorten API failed");
+          }
+        } catch (shortenErr) {
+          // Fallback ke URL panjang jika layanan pemendek gagal
+          console.warn("Gagal memperpendek URL, menggunakan URL panjang", shortenErr);
+          setShareUrl(longUrl);
+          generateQRCodeUrl(longUrl).then(setQrCodeUrl);
+        }
+        
       } catch (err) {
         console.error("Failed to generate link", err);
       } finally {
