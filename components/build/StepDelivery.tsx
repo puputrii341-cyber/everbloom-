@@ -16,26 +16,15 @@ export default function StepDelivery() {
       if (typeof window === "undefined") return;
       const baseUrl = window.location.origin;
       try {
-        const res = await fetch("/api/bouquet", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(state),
-        });
-        const data = await res.json();
-        
-        if (data.id) {
-          const url = `${baseUrl}/view?id=${data.id}`;
-          setShareUrl(url);
-          generateQRCodeUrl(url).then(setQrCodeUrl);
-        } else {
-          throw new Error("No ID returned");
-        }
-      } catch (err) {
-        console.error("API failed, falling back to long URL");
+        // Karena Vercel menggunakan serverless yang mana filesystem-nya read-only/ephemeral,
+        // menyimpan ke .bouquets.json tidak akan permanen.
+        // Oleh karena itu, kita langsung mem-bypass API dan menyematkan data ke dalam parameter URL.
         const encodedState = encodeBouquetState(state);
         const url = `${baseUrl}/view?b=${encodedState}`;
         setShareUrl(url);
         generateQRCodeUrl(url).then(setQrCodeUrl);
+      } catch (err) {
+        console.error("Failed to generate link", err);
       } finally {
         setIsGenerating(false);
       }
